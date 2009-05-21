@@ -5294,8 +5294,8 @@ receive_expr_clauses(Node) ->
 %% if any. If <code>Node</code> represents "<code>receive <em>C1</em>;
 %% ...; <em>Cn</em> end</code>", <code>none</code> is returned.
 %% Otherwise, if <code>Node</code> represents "<code>receive
-%% <em>C1</em>; ...; <em>Cn</em> after <em>Timeout</em> -> <em>A1</em>,
-%% ..., <em>Am</em> end</code>", <code>[A1, ..., Am]</code> is returned.
+%% <em>C1</em>; ...; <em>Cn</em> after <em>Timeout</em> -> ... end</code>",
+%% <code>Timeout</code> is returned.
 %%
 %% @see receive_expr/3
 
