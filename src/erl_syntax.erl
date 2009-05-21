@@ -6650,7 +6650,7 @@ meta_1(T) ->
 	underscore ->
 	    meta_call(underscore, []);
 	variable ->
-	    meta_call(variable, [string(variable_name(T))]);
+	    meta_call(variable, [string(atom_to_list(variable_name(T)))]);
 	warning_marker ->
 	    meta_call(warning_marker,
 		      [abstract(warning_marker_info(T))]);
