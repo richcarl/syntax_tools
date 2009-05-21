@@ -5875,10 +5875,10 @@ macro_arguments(Node) ->
 %% @see concrete/1
 %% @see is_literal/1
 
-abstract([H | T]) when is_integer(H) ->
-    case is_printable([H | T]) of
+abstract([H | T] = L) when is_integer(H) ->
+    case is_printable(L) of
 	true ->
-	    string([H | T]);
+	    string(L);
 	false ->
 	    abstract_tail(H, T)
     end;
@@ -6190,8 +6190,8 @@ revert_forms(T) ->
 	    case catch {ok, revert_forms_1(form_list_elements(T1))} of
 		{ok, Fs} ->
 		    Fs;
-		{error, R} ->
-		    erlang:error({error, R});
+		{error, _} = Error ->
+		    erlang:error(Error);
 		{'EXIT', R} ->
 		    exit(R);
 		R ->
