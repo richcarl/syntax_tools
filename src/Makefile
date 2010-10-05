@@ -8,8 +8,7 @@ INCLUDE=../include
 APP_TARGET=$(EBIN)/syntax_tools.app
 APPUP_TARGET=$(EBIN)/syntax_tools.appup
 
-ERL_COMPILE_FLAGS += -I$(INCLUDE) +warn_unused_vars +nowarn_shadow_vars +warn_unused_import +warn_missing_spec
-#ERL_COMPILE_FLAGS += -I$(INCLUDE) +warn_unused_vars +nowarn_shadow_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
+ERL_COMPILE_FLAGS += -I$(INCLUDE) +warn_unused_vars +nowarn_shadow_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
 
 SOURCES= \
 	epp_dodger.erl \
