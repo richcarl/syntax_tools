@@ -48,11 +48,30 @@
 	 nest/2, par/1, par/2, sep/1, text/1, null_text/1, text_par/1,
 	 text_par/2]).
 
--record(text, {s}).
--record(nest, {n, d}).
--record(beside, {d1, d2}).
--record(above, {d1, d2}).
--record(sep, {ds, i = 0 :: integer(), p = false :: boolean()}).
+%% ---------------------------------------------------------------------
+
+%% XXX: just an approximation
+-type deep_string() :: [char() | [_]].
+
+%% XXX: poor man's document() until recursive data types are supported
+-type doc() :: 'null'
+             | {'text' | 'fit', _}
+             | {'nest' | 'beside' | 'above' | 'union', _, _}
+             | {'sep' | 'float', _, _, _}.
+
+%% Document structures fully implemented and available to the user:
+-record(text,   {s  :: deep_string()}).
+-record(nest,   {n  :: integer(),   d :: doc()}).
+-record(beside, {d1 :: doc(),      d2 :: doc()}).
+-record(above,  {d1 :: doc(),      d2 :: doc()}).
+-record(sep,    {ds :: [doc()], i = 0 :: integer(), p = false :: boolean()}).
+
+%% Document structure which is not clear whether it is fully implemented: 
+-record(float,  {d  :: doc(), h :: integer(), v :: integer()}).
+
+%% Document structures not available to the user:
+-record(union,  {d1 :: doc(), d2 :: doc()}).
+-record(fit,    {d  :: doc()}).
 
 
 %% ---------------------------------------------------------------------
@@ -90,6 +109,8 @@
 %% often represents a larger number of possible layouts than just the
 %% sum of the components.
 
+-type document() :: 'null' | #text{} | #nest{} | #beside{}
+                  | #above{} | #sep{} | #float{} | #union{} | #fit{}.
 
 %% =====================================================================
 %% @spec text(Characters::string()) -> document()
@@ -104,6 +125,8 @@
 %% @see empty/0
 %% @see null_text/1
 %% @see text_par/2
+
+-spec text(string()) -> #text{}.
 
 text(S) ->
     mktext(string(S)).	  % convert to internal representation
@@ -133,6 +156,8 @@ mktext(S) ->
 %% @see text/1
 %% @see empty/0
 
+-spec null_text(string()) -> #text{}.
+
 null_text(S) ->
     mktext(null_string(S)).    % convert to internal representation
 
@@ -140,6 +165,8 @@ null_text(S) ->
 %% =====================================================================
 %% @spec text_par(Text::string()) -> document()
 %% @equiv text_par(Text, 0)
+
+-spec text_par(string()) -> document().
 
 text_par(S) ->
     text_par(S, 0).
@@ -174,6 +201,8 @@ text_par(S) ->
 %% @see text_par/1
 %% @see text/1
 %% @see par/2
+
+-spec text_par(string(), integer()) -> document().
 
 text_par(S, 0) ->
     par(words(S));
@@ -213,6 +242,8 @@ words_1(Cs, As, Ws) ->
 %%
 %% @see text/1
 
+-spec empty() -> 'null'.
+
 empty() ->
     null.
 
@@ -222,6 +253,8 @@ empty() ->
 %%
 %% @doc Forces a line break at the end of the given document. This is a
 %% utility function; see {@link empty/0} for details.
+
+-spec break(document()) -> #above{}.
 
 break(D) ->
     above(D, empty()).
@@ -233,6 +266,8 @@ break(D) ->
 %% @doc Indents a document a number of character positions to the right.
 %% Note that `N' may be negative, shifting the text to the left, or
 %% zero, in which case `D' is returned unchanged.
+
+-spec nest(integer(), document()) -> document().
 
 nest(N, D) ->
     if N =:= 0 ->
@@ -258,6 +293,8 @@ nest(N, D) ->
 %%    cd  gh  =>  cdef
 %%                  gh'''
 
+-spec beside(document(), document()) -> #beside{}.
+
 beside(D1, D2) ->
     #beside{d1 = D1, d2 = D2}.
 
@@ -279,6 +316,8 @@ beside(D1, D2) ->
 %%    abc   fgh  =>   de
 %%     de    ij      fgh
 %%                    ij'''
+
+-spec above(document(), document()) -> #above{}.
 
 above(D1, D2) ->
     #above{d1 = D1, d2 = D2}.
@@ -308,6 +347,8 @@ above(D1, D2) ->
 %%
 %% @see par/2
 
+-spec sep([document()]) -> #sep{}.
+
 sep(Ds) ->
     #sep{ds = Ds}.
 
@@ -315,6 +356,8 @@ sep(Ds) ->
 %% =====================================================================
 %% @spec par(Docs::[document()]) -> document()
 %% @equiv par(Ds, 0)
+
+-spec par([document()]) -> #sep{}.
 
 par(Ds) ->
     par(Ds, 0).
@@ -365,6 +408,8 @@ par(Ds) ->
 %% @see par/1
 %% @see text_par/2
 
+-spec par([document()], integer()) -> #sep{}.
+
 par(Ds, N) ->
     mksep(Ds, N, true).
 
@@ -377,6 +422,8 @@ mksep(Ds, N, P) when is_integer(N) ->
 %% =====================================================================
 %% @spec follow(D1::document(), D2::document()) -> document()
 %% @equiv follow(D1, D2, 0)
+
+-spec follow(document(), document()) -> #beside{}.
 
 follow(D1, D2) ->
     follow(D1, D2, 0).
@@ -399,6 +446,8 @@ follow(D1, D2) ->
 %%
 %% @see follow/2
 
+-spec follow(document(), document(), integer()) -> #beside{}.
+
 follow(D1, D2, N) when is_integer(N) ->
     beside(par([D1, nil()], N), D2).
 
@@ -406,6 +455,8 @@ follow(D1, D2, N) when is_integer(N) ->
 %% =====================================================================
 %% @spec floating(document()) -> document()
 %% @equiv floating(D, 0, 0)
+
+-spec floating(document()) -> #float{}.
 
 floating(D) ->
     floating(D, 0, 0).
@@ -430,7 +481,7 @@ floating(D) ->
 %% documents amounts to a "bubblesort", so don't expect it to be able to
 %% sort large sequences of floating documents quickly.
 
--record(float, {d, h, v}).
+-spec floating(document(), integer(), integer()) -> #float{}.
 
 floating(D, H, V) when is_integer(H), is_integer(V) ->
     #float{d = D, h = H, v = V}.
@@ -440,6 +491,8 @@ floating(D, H, V) when is_integer(H), is_integer(V) ->
 %% @spec format(D::document()) -> string()
 %% @equiv format(D, 80)
 
+-spec format(document()) -> string().
+
 format(D) ->
     format(D, 80).
 
@@ -447,6 +500,8 @@ format(D) ->
 %% =====================================================================
 %% @spec format(D::document(), PaperWidth::integer()) -> string()
 %% @equiv format(D, PaperWidth, 65)
+
+-spec format(document(), integer()) -> string().
 
 format(D, W) ->
     format(D, W, 65).
@@ -470,6 +525,8 @@ format(D, W) ->
 %% is 65.
 %%
 %% @see best/3
+
+-spec format(document(), integer(), integer()) -> string().
 
 format(D, W, R) ->
     case best(D, W, R) of
@@ -630,12 +687,9 @@ flatrev([], As, []) ->
 %%	c_float_beside		float (c_beside)
 %%	c_float_above_nest	float (c_above_nest)
 
-%% Document structures not available to the user:
-
--record(union, {d1, d2}).
--record(fit, {d}).
-
 %% Entry point for the layout algorithm:
+
+-spec best(document(), integer(), integer()) -> 'empty' | document().
 
 best(D, W, R) ->
     rewrite(D, #c_best_nest{w = W, r = R, i = 0}).
