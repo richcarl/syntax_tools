@@ -154,7 +154,12 @@ recomment_forms_2(C, [N | Ns] = Nodes, Insert) ->
     Min = node_min(N),
     Max = node_max(N),
     Delta = comment_delta(Text),
-    if L > Max ->
+    Trailing = 
+	case Ns of
+	    [] -> true;
+	    [Next | _] -> L < node_min(Next) - 2
+	end,
+    if L > Max + 1 ; L =:= Max + 1, not Trailing ->
 	    [N | recomment_forms_2(C, Ns, Insert)];
        L + Delta < Min - 1 ->
 	    %% At least one empty line between the current form
@@ -218,11 +223,11 @@ filter_forms([F | Fs], Kill, S) ->
 		     _ ->
 			 S
 		 end,
-	    if S1#filter.file == A1,
+	    if S1#filter.file =:= A1,
 	       S1#filter.line =< A2 ->
 		    [F | filter_forms(Fs, false,
 				      S1#filter{line = A2})];
-	       Kill == true ->
+	       Kill =:= true ->
 		    [node_kill_range(F)
 		     | filter_forms(Fs, true, S1)];
 	       true ->
@@ -367,7 +372,7 @@ insert(Node, L, Col, Ind, C) ->
 	    if L < Min ->
 		    %% The comment line should be above this node.
 		    node_add_precomment(C, Node);
-	       Min == Max  ->
+	       Min =:= Max  ->
 		    %% The whole node is on a single line (this
 		    %% should usually catch all leaf nodes), so we
 		    %% postfix the comment.
