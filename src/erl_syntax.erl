@@ -2095,9 +2095,11 @@ cons_prefix(_) ->
 
 list_suffix(Node) ->
     case unwrap(Node) of
-	{cons, _, _, Tail} ->
+	{cons, Line, _, Tail} ->
 	    case cons_suffix(Tail) of
-		{nil, _} ->
+		{nil, Line} ->
+		    % Tail on same line as the first cons, no interesting information
+		    % is lost here.
 		    none;
 		Tail1 ->
 		    Tail1
