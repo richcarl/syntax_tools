@@ -88,7 +88,7 @@
 %% This is a so-called Erlang I/O ErrorInfo structure; see the {@link
 %% //stdlib/io} module for details.
 
--type errorinfo() :: term(). % {integer(), atom(), term()}.
+-type errorinfo() :: {integer(), atom(), term()}.
 
 -type option() :: atom() | {atom(), term()}.
 
@@ -189,8 +189,8 @@ parse_file(File, Parser, Options) ->
             try Parser(Dev, 1, Options)
             after ok = file:close(Dev)
 	    end;
-        {error, _} = Error ->
-            Error
+        {error, Error} ->
+            {error, {0, file, Error}}  % defer to file:format_error/1
     end.
 
 
