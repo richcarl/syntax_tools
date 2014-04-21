@@ -22,4 +22,4 @@ clean:
 	-rm -f doc/*.html doc/stylesheet.css doc/erlang.png doc/edoc-info
 
 docs:
-	erl -pa ./ebin -noshell -eval "edoc:application($(APPNAME), \".\", [$(DOC_OPTS)])" -s init stop
+	erl -noshell -eval "edoc:application($(APPNAME), \".\", [$(DOC_OPTS)])" -s init stop
