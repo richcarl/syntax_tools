@@ -35,6 +35,9 @@
 -export([recomment_forms/2, quick_recomment_forms/2, recomment_tree/2]).
 
 
+%% @type syntaxTree() = erl_syntax:syntaxTree(). An abstract syntax
+%% tree. See the {@link erl_syntax} module for details.
+
 %% =====================================================================
 %% @spec quick_recomment_forms(Forms, Comments::[Comment]) ->
 %%           syntaxTree()
@@ -60,7 +63,6 @@ quick_recomment_forms(Tree, Cs) ->
 %% =====================================================================
 %% @spec recomment_forms(Forms, Comments::[Comment]) -> syntaxTree()
 %%
-%%	    syntaxTree() = erl_syntax:syntaxTree()
 %%	    Forms = syntaxTree() | [syntaxTree()]
 %%	    Comment = {Line, Column, Indentation, Text}
 %%	    Line = integer()
