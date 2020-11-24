@@ -6,7 +6,6 @@ EBIN=../ebin
 INCLUDE=../include
 
 APP_TARGET=$(EBIN)/syntax_tools.app
-APPUP_TARGET=$(EBIN)/syntax_tools.appup
 
 ERL_COMPILE_FLAGS += -I$(INCLUDE) +warn_unused_vars +nowarn_shadow_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
 
@@ -21,7 +20,7 @@ SOURCES= \
 	erl_syntax_lib.erl \
 	prettypr.erl
 
-OBJECTS=$(SOURCES:%.erl=$(EBIN)/%.$(EMULATOR)) $(APP_TARGET) $(APPUP_TARGET)
+OBJECTS=$(SOURCES:%.erl=$(EBIN)/%.$(EMULATOR)) $(APP_TARGET)
 
 all: $(OBJECTS)
 
@@ -32,7 +31,4 @@ $(EBIN)/%.$(EMULATOR):%.erl
 	erlc -pa $(EBIN) -W $(ERL_COMPILE_FLAGS) -o$(EBIN) $<
 
 $(APP_TARGET): syntax_tools.app.src ../vsn.mk
-	sed -e 's;%VSN%;$(SYNTAX_TOOLS_VSN);' $< > $@
-
-$(APPUP_TARGET): syntax_tools.appup.src ../vsn.mk
 	sed -e 's;%VSN%;$(SYNTAX_TOOLS_VSN);' $< > $@
