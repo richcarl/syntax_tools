@@ -12,10 +12,8 @@ ERL_COMPILE_FLAGS += -I$(INCLUDE) +warn_unused_vars +nowarn_shadow_vars +warn_un
 SOURCES= \
 	epp_dodger.erl \
 	erl_recomment.erl \
-	erl_tidy.erl \
 	erl_comment_scan.erl \
 	erl_syntax.erl \
-	igor.erl \
 	erl_prettypr.erl \
 	erl_syntax_lib.erl \
 	prettypr.erl
