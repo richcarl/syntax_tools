@@ -7,8 +7,7 @@ PRIV=../priv
 INCLUDE=../include
 
 APP_TARGET=$(EBIN)/syntax_tools.app
-
-ERL_COMPILE_FLAGS += -I$(INCLUDE) +warn_unused_vars +nowarn_shadow_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
+ERL_COMPILE_FLAGS += -I$(INCLUDE) +warn_deprecated_catch +nowarn_shadow_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
 
 SOURCES= \
 	epp_dodger.erl \
