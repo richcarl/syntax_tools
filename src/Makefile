@@ -33,7 +33,7 @@ clean:
 	-rm -f $(OBJECTS)
 
 $(EBIN)/%.$(EMULATOR):%.erl
-	erlc -pa $(EBIN) -W $(ERL_COMPILE_FLAGS) -o$(EBIN) $<
+	erlc -pa $(EBIN) -Werror $(ERL_COMPILE_FLAGS) -o$(EBIN) $<
 
 $(MERL_OBJECTS): $(INCLUDE)/merl.hrl
 

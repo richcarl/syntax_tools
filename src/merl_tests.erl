@@ -26,6 +26,8 @@
 
 -module(merl_tests).
 
+-compile(nowarn_missing_spec).
+
 %-define(MERL_NO_TRANSFORM, true).
 -include("merl.hrl").
 
